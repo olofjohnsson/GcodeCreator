@@ -8,6 +8,10 @@ package gcodecreator;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+//import static java.lang.Math.cos;
+import java.lang.Math;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -21,6 +25,15 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
     float xC, yC; 
     String fileName = "C:\\temp\\gcodeDemo.nc";
     boolean okToWrite = false;
+    Point c;
+    float radius = 0;
+    float stepCounterFloat = 0;
+    int stepCounter = 0;
+    float stepCounterRest = 0;
+    float stepDown = 0;
+    int tabThickness = 1;
+    double tabDegree = Math.toRadians(91);
+    
     
     
     /**
@@ -42,16 +55,28 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        inputXCenter = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        inputYCenter = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        inputCircleDiameter = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        inputToolDiameter = new javax.swing.JTextField();
+        buttonAddGcode = new javax.swing.JButton();
+        buttonDone = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        inputSpeed = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        inputZSafe = new javax.swing.JTextField();
+        inputStepDown = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        inputThickness = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        inputPlungeSpeed = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,11 +88,11 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setText("Center koordinates");
 
-        jTextField1.setText("0");
+        inputXCenter.setText("0");
 
         jLabel1.setText("X");
 
-        jTextField2.setText("0");
+        inputYCenter.setText("0");
 
         jLabel2.setText("Y");
 
@@ -76,38 +101,50 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
 
         jLabel7.setText("Circle diameter");
 
-        jTextField3.setText("0");
+        inputCircleDiameter.setText("0");
 
         jLabel8.setText("Tool diameter");
 
-        jTextField4.setText("0");
+        inputToolDiameter.setText("0");
+
+        buttonAddGcode.setText("Add to gcode");
+        buttonAddGcode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAddGcodeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
+                        .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(inputCircleDiameter, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(inputXCenter, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(inputYCenter, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(inputToolDiameter, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(28, 28, 28)
+                        .addComponent(buttonAddGcode)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -119,31 +156,62 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(inputXCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(inputYCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(inputCircleDiameter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(inputToolDiameter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addComponent(buttonAddGcode)
+                .addContainerGap())
         );
 
-        jButton1.setText("Generate Gcode");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonDone.setText("Done");
+        buttonDone.setActionCommand("");
+        buttonDone.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                buttonDoneActionPerformed(evt);
             }
         });
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel9.setText("CNC parameters");
+
+        inputSpeed.setText("400");
+
+        jLabel3.setText("Speed");
+
+        jLabel10.setText("Z safe");
+
+        inputZSafe.setText("2");
+
+        inputStepDown.setText("1");
+
+        jLabel11.setText("Step down");
+
+        inputThickness.setText("4");
+        inputThickness.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputThicknessActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setText("Thickness");
+
+        jLabel13.setText("Plunge speed");
+
+        inputPlungeSpeed.setText("50");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -153,33 +221,92 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel10))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(inputSpeed, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(inputZSafe, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(inputStepDown, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                                .addComponent(inputPlungeSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(inputThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(153, 153, 153)
-                        .addComponent(jButton1)))
-                .addContainerGap(136, Short.MAX_VALUE))
+                        .addGap(172, 172, 172)
+                        .addComponent(buttonDone)))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel9)
+                        .addGap(13, 13, 13)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(inputSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(inputPlungeSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(inputZSafe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(inputStepDown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(inputThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel12))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addComponent(buttonDone)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void buttonAddGcodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddGcodeActionPerformed
         try {
             generateGcode();
         } catch (IOException ex) {
             Logger.getLogger(GcodeCreatorGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         resetTextFields();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_buttonAddGcodeActionPerformed
+
+    private void buttonDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDoneActionPerformed
+        try {
+            writeToFile("M5");
+        } catch (IOException ex) {
+            Logger.getLogger(GcodeCreatorGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_buttonDoneActionPerformed
+
+    private void inputThicknessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputThicknessActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputThicknessActionPerformed
 
     /**
      * @param args the command line arguments
@@ -217,55 +344,88 @@ public class GcodeCreatorGUI extends javax.swing.JFrame {
     }
     public void generateGcode() throws IOException{
         collectGcodeData();
+        writeToFile("G21\nG90\nG4 P8\nG0 Z"+inputZSafe.getText());//Write header
+        writeToFile("G0 X"+(c.x-(radius+Float.parseFloat(inputToolDiameter.getText())/2))+"Y"+c.y);//Go to circle start point
+        writeToFile("G0 Z0");//Move to surface
+        for (int i=1;i<=stepCounter-tabThickness;i++){
+            writeToFile("G1 Z-"+stepDown*i+"F"+inputPlungeSpeed.getText());//Plunge
+            writeToFile("G3 X"+(c.x-(radius+Float.parseFloat(inputToolDiameter.getText())/2))+"Y"+c.y+"I"+(radius+Float.parseFloat(inputToolDiameter.getText())/2)+"J0F"+inputSpeed.getText());//Start circle move
+        }
+        if (tabThickness > 0){
+            writeToFile("\n(-------------TABS------------)");
+            writeToFile("G0 X"+(c.x-(radius+Float.parseFloat(inputToolDiameter.getText())/2))+" "+"Y"+c.y);//Go to circle start point
+            for (int i=stepCounter-2;i<=stepCounter;i++){
+                writeToFile("G1 Z-"+stepDown*i+" "+"F"+inputPlungeSpeed.getText());//Plunge
+                writeToFile("G3 X"+(radius+(Float.parseFloat(inputToolDiameter.getText())/2))*cos(tabDegree)+" "+"Y"+(radius+(Float.parseFloat(inputToolDiameter.getText())/2))*-1*sin(tabDegree)+" "+"I"+(radius+Float.parseFloat(inputToolDiameter.getText())/2)+" "+"J0 F"+inputSpeed.getText());//Start circle move
+                writeToFile("G0 X"+(radius+(Float.parseFloat(inputToolDiameter.getText())/2))*-1*cos(tabDegree)+" "+"Y"+(radius+(Float.parseFloat(inputToolDiameter.getText())/2))*-1*sin(tabDegree));//Go to other side of tab
+            }   
+        }
+        writeToFile("G1 Z-"+inputThickness.getText()+"F"+inputPlungeSpeed.getText());//Plunge
+        writeToFile("G3 X"+(c.x-(radius+Float.parseFloat(inputToolDiameter.getText())/2))+" "+"Y"+c.y+" "+"I"+(radius+Float.parseFloat(inputToolDiameter.getText())/2)+" "+"J0"+" "+"F"+inputSpeed.getText());//Start circle move
     }
     public void collectGcodeData() throws IOException{
-        Point c = getCircleCenter();
-        float radius = 0;
-        if (Float.parseFloat(jTextField3.getText()) > 2){
-            radius = Float.parseFloat(jTextField3.getText())/2;
+        c = getCircleCenter();
+        
+        if (Float.parseFloat(inputCircleDiameter.getText()) > 2){
+            radius = Float.parseFloat(inputCircleDiameter.getText())/2;
             okToWrite = true;
         }else{
             JOptionPane.showMessageDialog(this,"Please enter circle diameter");
             okToWrite = false;
         }
-        
-        if(okToWrite){
-            writeToFile(Float.toString(c.x));
-        }
+        stepCounterFloat = Float.parseFloat(inputThickness.getText())/Float.parseFloat(inputStepDown.getText());
+        stepCounter = (int)stepCounterFloat;
+        stepCounterRest = stepCounterFloat-stepCounter;
+        stepDown = Float.parseFloat(inputStepDown.getText());
+        System.out.println("StepCounterFloat: "+stepCounterFloat+"\nstepCounter: "+stepCounter+"\nstepCounterRest: "+stepCounterRest);
+ 
     }
     
     public Point getCircleCenter(){
-        Point c1c = new Point(Float.parseFloat(jTextField1.getText()), Float.parseFloat(jTextField2.getText())); //(Circle 1 center point)
+        Point c1c = new Point(Float.parseFloat(inputXCenter.getText()), Float.parseFloat(inputYCenter.getText())); //(Circle 1 center point)
         return c1c;
     }
-    public void writeToFile(String str) 
-        throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
-        writer.append(str);
-        writer.append("\n");
-        writer.close();
+    public void writeToFile(String str) throws IOException {
+        if(okToWrite){   
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
+            writer.append(str);
+            writer.append("\n");
+            writer.close();
+        }
     } 
     public void resetTextFields(){
-        jTextField1.setText("0");
-        jTextField2.setText("0");
-        jTextField3.setText("0");
-        jTextField4.setText("0");
+        inputXCenter.setText("0");
+        inputYCenter.setText("0");
+        inputCircleDiameter.setText("0");
+        inputToolDiameter.setText("0");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton buttonAddGcode;
+    private javax.swing.JButton buttonDone;
+    private javax.swing.JTextField inputCircleDiameter;
+    private javax.swing.JTextField inputPlungeSpeed;
+    private javax.swing.JTextField inputSpeed;
+    private javax.swing.JTextField inputStepDown;
+    private javax.swing.JTextField inputThickness;
+    private javax.swing.JTextField inputToolDiameter;
+    private javax.swing.JTextField inputXCenter;
+    private javax.swing.JTextField inputYCenter;
+    private javax.swing.JTextField inputZSafe;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
 }
 class Point{
